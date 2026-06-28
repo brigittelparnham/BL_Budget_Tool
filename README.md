@@ -26,8 +26,8 @@ Account managers can add campaigns, track spend against budget, and update spend
 The quickest way to get the app running. You will need [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
 
 ```bash
-git clone <your-repo-url>
-cd bl_budget_tool
+git clone https://github.com/brigittelparnham/BL_Budget_Tool.git
+cd BL_Budget_Tool
 docker-compose up --build
 ```
 
