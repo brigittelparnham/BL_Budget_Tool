@@ -5,14 +5,18 @@
     <v-card class="mb-8">
       <v-data-table
         :headers="headers"
-        :items="campaigns"
+        :items="tableRows"
         :loading="loading"
         no-data-text="No campaigns yet. Add one below."
       >
-        <template #item.status="{ item }">
-          <v-chip :color="statusColour(item.status)" size="small">
-            {{ item.status }}
-          </v-chip>
+        <template #item.spendPct="{ item }">
+          <v-tooltip :text="`${formatPercent(item.spendPct)} of budget spent`" location="top">
+            <template #activator="{ props }">
+              <v-chip v-bind="props" :color="statusColour(item.status)" size="small" style="cursor: pointer">
+                {{ item.status }}
+              </v-chip>
+            </template>
+          </v-tooltip>
         </template>
 
         <template #item.budget="{ item }">
@@ -20,7 +24,22 @@
         </template>
 
         <template #item.spend="{ item }">
-          {{ formatCurrency(item.spend) }}
+          <div v-if="editingId === item.id" class="d-flex align-center gap-2">
+            <v-text-field
+              v-model="editSpend"
+              type="number"
+              density="compact"
+              variant="outlined"
+              hide-details
+              style="max-width: 120px"
+            />
+            <v-btn icon="mdi-check" size="x-small" color="success" :loading="saving" @click="saveSpend(item)" />
+            <v-btn icon="mdi-close" size="x-small" @click="cancelEdit" />
+          </div>
+          <div v-else class="d-flex align-center gap-2" style="cursor: default">
+            {{ formatCurrency(item.spend) }}
+            <v-btn icon="mdi-pencil" size="x-small" variant="text" style="cursor: pointer" @click="startEdit(item)" />
+          </div>
         </template>
       </v-data-table>
     </v-card>
@@ -72,32 +91,46 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 const API_URL = 'http://localhost:8000/api/campaigns/'
 
 interface Campaign {
   id: number
   name: string
-  budget: string
-  spend: string
+  budget: number
+  spend: number
   status: string
+}
+
+interface TableRow extends Campaign {
+  spendPct: number
 }
 
 const headers = [
   { title: 'Name', key: 'name' },
   { title: 'Budget', key: 'budget' },
   { title: 'Spend', key: 'spend' },
-  { title: 'Status', key: 'status' },
+  { title: 'Status', key: 'spendPct' },
 ]
 
 const campaigns = ref<Campaign[]>([])
 const loading = ref(false)
 const submitting = ref(false)
+const saving = ref(false)
 const error = ref('')
 const form = ref()
 
 const newCampaign = ref({ name: '', budget: '', spend: '' })
+const editingId = ref<number | null>(null)
+const editSpend = ref('')
+
+const tableRows = computed<TableRow[]>(() =>
+  campaigns.value.map(c => ({
+    ...c,
+    spendPct: c.budget > 0 ? (c.spend / c.budget) * 100 : 0,
+  }))
+)
 
 const required = (v: string) => !!v || 'Required'
 const positiveNumber = (v: string) => Number(v) >= 0 || 'Must be 0 or greater'
@@ -112,8 +145,22 @@ function statusColour(status: string) {
   return colours[status] ?? 'default'
 }
 
-function formatCurrency(value: string) {
-  return `£${Number(value).toLocaleString('en-GB', { minimumFractionDigits: 2 })}`
+function formatPercent(value: number) {
+  return `${value.toFixed(1)}%`
+}
+
+function formatCurrency(value: number) {
+  return `£${value.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
+
+function startEdit(item: Campaign) {
+  editingId.value = item.id
+  editSpend.value = String(item.spend)
+}
+
+function cancelEdit() {
+  editingId.value = null
+  editSpend.value = ''
 }
 
 async function fetchCampaigns() {
@@ -155,6 +202,26 @@ async function submit() {
     error.value = 'Something went wrong. Is the backend running?'
   } finally {
     submitting.value = false
+  }
+}
+
+async function saveSpend(item: Campaign) {
+  saving.value = true
+  try {
+    const res = await fetch(`${API_URL}${item.id}/`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ spend: editSpend.value }),
+    })
+
+    if (!res.ok) return
+
+    const updated = await res.json()
+    const index = campaigns.value.findIndex(c => c.id === item.id)
+    if (index !== -1) campaigns.value[index] = updated
+    cancelEdit()
+  } finally {
+    saving.value = false
   }
 }
 

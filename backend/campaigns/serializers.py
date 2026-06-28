@@ -5,6 +5,9 @@ from .models import Campaign
 class CampaignSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
 
+    budget = serializers.DecimalField(max_digits=12, decimal_places=2, coerce_to_string=False)
+    spend = serializers.DecimalField(max_digits=12, decimal_places=2, coerce_to_string=False)
+
     class Meta:
         model = Campaign
         fields = ['id', 'name', 'budget', 'spend', 'status']
