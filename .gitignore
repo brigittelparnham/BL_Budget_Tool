@@ -1,1 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
 backend/venv/
+venv/
+.env
+
+# Django
+backend/db.sqlite3
+*.sqlite3
+
+# Node / frontend
+node_modules/
+dist/
+.pnpm-store/
+
+# Build output
+*.local
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code
+AGENTS.md
+
+# Docker
+*.env.local
