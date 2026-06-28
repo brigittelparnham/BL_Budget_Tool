@@ -1,4 +1,6 @@
-# bl_budget_tool
+# BL_Budget_Tool
+
+Software Engineer Coding Task
 
 Scaffolded with Vuetify CLI.
 
