@@ -9,6 +9,6 @@ RUN pnpm install
 
 COPY . .
 
-EXPOSE 5173
+EXPOSE 3000
 
 CMD ["pnpm", "dev", "--host"]
