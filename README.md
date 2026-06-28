@@ -1,77 +1,96 @@
-# BL_Budget_Tool
+# Campaign Budget Tracker
 
-Software Engineer Coding Task
+![Campaign Budget Tracker](docs/screenshot.png)
 
-Scaffolded with Vuetify CLI.
+A full-stack campaign budget tracking tool built for the Brainlabs software engineer coding task.
 
-## ❗️ Documentation
+Account managers can add campaigns, track spend against budget, and update spend as it changes. Each campaign is automatically assigned a status based on how much of its budget has been used.
 
-- Primary docs: https://vuetifyjs.com/
-- Getting started guide: https://vuetifyjs.com/en/getting-started/installation/
-- Community support: https://community.vuetifyjs.com/
-- Issue tracker: https://issues.vuetifyjs.com/
+---
 
-## 🧱 Stack
+## Stack
 
-- Framework: Vue 3 + Vite
-- UI Library: Vuetify
-- Language: TypeScript
-- Package manager: pnpm
+| Layer | Technology |
+|---|---|
+| Frontend | Vue 3 + Vuetify + TypeScript |
+| Backend | Django + Django REST Framework |
+| Database | SQLite |
+| Containerisation | Docker + docker-compose |
 
-## 🧭 Start Here
+---
 
-- Main entry: `src/main.ts`
-- Main app component: `src/App.vue`
-- Main styles: `src/styles/`
-- Plugin setup: `src/plugins/`
+## Running the app
 
-## 📁 Project Structure
+### With Docker (recommended)
 
-- `src/main.ts` — application entry point
-- `src/App.vue` — root component
-- `src/components/` — reusable Vue components
-- `src/plugins/` — plugin registration and setup
-- `src/styles/` — global styles and theme settings
-- `public/` — static public files
-
-## ✨ Enabled Features
-
-- Base setup
-
-## 💿 Install
-
-Use your selected package manager (pnpm) to install dependencies:
+The quickest way to get the app running. You will need [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
 
 ```bash
-pnpm install
+git clone <your-repo-url>
+cd bl_budget_tool
+docker-compose up --build
 ```
 
-## 🚀 Quick Start
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
+
+The backend API is available at [http://localhost:8000/api/campaigns/](http://localhost:8000/api/campaigns/).
+
+> On subsequent runs you can omit `--build` and just use `docker-compose up`.
+
+---
+
+### Running locally (without Docker)
+
+**Backend**
 
 ```bash
+cd backend
+python -m venv venv
+source venv/bin/activate       # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+The API will be available at [http://localhost:8000](http://localhost:8000).
+
+**Frontend**
+
+In a separate terminal from the project root:
+
+```bash
+npm install -g pnpm   # skip if you already have pnpm
 pnpm install
 pnpm dev
 ```
 
-## 🏗️ Build
+Then open [http://localhost:5173](http://localhost:5173) in your browser.
+
+---
+
+## Running the tests
 
 ```bash
-pnpm build
+cd backend
+source venv/bin/activate
+python manage.py test campaigns
 ```
 
-## 🧪 Available Scripts
+The test suite covers campaign status logic, all API endpoints, input validation, and edge cases.
 
-- `pnpm dev`
-- `pnpm build`
-- `pnpm preview`
-- `pnpm build-only`
-- `pnpm type-check`
+---
 
-## 💪 Support Vuetify Development
+## Campaign statuses
 
-This project uses Vuetify - an MIT licensed Open Source project. We are glad to welcome contributors and any support for ongoing development:
+| Status | Condition |
+|---|---|
+| OK | Spend is below 90% of budget |
+| Warning | Spend is 90% or more of budget |
+| Budget Reached | Spend equals budget exactly |
+| Overspent | Spend exceeds budget |
 
-- Contribute to Vuetify and ecosystem projects: https://github.com/vuetifyjs
-- Request enterprise support: https://support.vuetifyjs.com/
-- Sponsor on GitHub: https://github.com/sponsors/vuetifyjs
-- Support on Open Collective: https://opencollective.com/vuetify
+---
+
+## Project decisions
+
+See [DECISIONS.md](DECISIONS.md) for an explanation of the key technical choices made during development.
