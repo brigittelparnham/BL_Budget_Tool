@@ -1,19 +1,34 @@
-/**
- * plugins/vuetify.ts
- *
- * Framework documentation: https://vuetifyjs.com`
- */
+import { createVuetify } from "vuetify";
+import "@mdi/font/css/materialdesignicons.css";
+import "vuetify/styles";
 
-// Composables
-import { createVuetify } from 'vuetify'
-// Styles
-import '@mdi/font/css/materialdesignicons.css'
+const brainlabsLight = {
+  dark: false,
+  colors: {
+    background: "#EEF1EC",
+    surface: "#FFFFFF",
+    "surface-bright": "#FCFDFB",
+    primary: "#6B4DE6",
+    secondary: "#1B211D",
+    success: "#14935E",
+    warning: "#D89A14",
+    "deep-orange": "#E2691F",
+    error: "#DC4642",
+    "on-surface": "#1B211D",
+    "on-background": "#1B211D",
+    "on-primary": "#FFFFFF",
+  },
+};
 
-import 'vuetify/styles'
-
-// https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
   theme: {
-    defaultTheme: 'system',
+    defaultTheme: "brainlabsLight",
+    themes: { brainlabsLight },
   },
-})
+  defaults: {
+    VCard: { rounded: "0", elevation: 0, border: true },
+    VBtn: { rounded: "lg" },
+    VChip: { rounded: "pill" },
+    VTextField: { color: "primary" },
+  },
+});
