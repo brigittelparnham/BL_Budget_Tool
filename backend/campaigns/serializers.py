@@ -29,6 +29,7 @@ class CampaignSerializer(serializers.ModelSerializer):
             return 'Overspent'
         if obj.spend == obj.budget:
             return 'Budget Reached'
+        # cast to float to avoid Decimal vs float type mismatch
         if float(obj.spend) / float(obj.budget) >= 0.9:
             return 'Warning'
         return 'OK'
