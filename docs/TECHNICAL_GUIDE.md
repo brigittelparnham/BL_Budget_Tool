@@ -276,7 +276,7 @@ The two services run independently. `depends_on: backend` means Docker starts th
 volumes:
   - .:/app              # mount local source files into container
   - /app/node_modules   # keep container's node_modules separate
-  - db_data:/app/db.sqlite3  # persist the database
+  - db_data:/app/data        # persist the database
 ```
 
 The source file mount means changes to Vue files hot-reload in the browser without rebuilding the container. The `node_modules` mount prevents the host machine's `node_modules` (compiled for Mac) from overwriting the container's `node_modules` (compiled for Linux).

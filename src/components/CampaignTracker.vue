@@ -336,8 +336,9 @@ const tableRows = computed<TableRow[]>(() =>
   })),
 );
 
-const required = (v: string) => !!v || "Required";
-const positiveNumber = (v: string) => Number(v) >= 0 || "Must be 0 or greater";
+const required = (v: string) => !!v.trim() || "Required";
+const positiveNumber = (v: string) =>
+  (v.trim() !== "" && Number(v) >= 0) || "Must be 0 or greater";
 
 const statusStyles: Record<string, { bg: string; color: string; bar: string }> =
   {
@@ -370,11 +371,13 @@ function formatCurrency(value: number) {
 function startEdit(item: Campaign) {
   editingId.value = item.id;
   editSpend.value = String(item.spend);
+  error.value = "";
 }
 
 function cancelEdit() {
   editingId.value = null;
   editSpend.value = "";
+  error.value = "";
 }
 
 async function fetchCampaigns() {
