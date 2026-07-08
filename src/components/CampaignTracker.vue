@@ -46,6 +46,7 @@
                   variant="outlined"
                   hide-details
                   style="max-width: 120px"
+                  :rules="[required, positiveNumber]"
                 />
                 <v-btn
                   icon="mdi-check"
@@ -187,6 +188,7 @@
                 density="compact"
                 variant="outlined"
                 hide-details
+                :rules="[required, positiveNumber]"
               />
               <v-btn
                 icon="mdi-check"
@@ -418,6 +420,12 @@ async function submit() {
 }
 
 async function saveSpend(item: Campaign) {
+  if (required(editSpend.value) !== true || positiveNumber(editSpend.value) !== true) {
+    error.value = "Spend must be a number of 0 or greater.";
+    return;
+  }
+
+  error.value = "";
   saving.value = true;
   try {
     const res = await fetch(`${API_URL}${item.id}/`, {
@@ -426,7 +434,10 @@ async function saveSpend(item: Campaign) {
       body: JSON.stringify({ spend: editSpend.value }),
     });
 
-    if (!res.ok) return;
+    if (!res.ok) {
+      error.value = "Failed to update spend. Please check the value and try again.";
+      return;
+    }
 
     const updated = await res.json();
     const index = campaigns.value.findIndex((c) => c.id === item.id);

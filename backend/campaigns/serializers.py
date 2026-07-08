@@ -1,3 +1,6 @@
+#rules about how data is presented to the API. Things that only matter when you're turning it into JSON for a response.
+from decimal import Decimal
+
 from rest_framework import serializers
 from .models import Campaign
 
@@ -24,12 +27,11 @@ class CampaignSerializer(serializers.ModelSerializer):
 
     def get_status(self, obj):
         if obj.budget <= 0:
-            return 'OK'
+            return 'Overspent' if obj.spend > 0 else 'OK'
         if obj.spend > obj.budget:
             return 'Overspent'
         if obj.spend == obj.budget:
             return 'Budget Reached'
-        # cast to float to avoid Decimal vs float type mismatch
-        if float(obj.spend) / float(obj.budget) >= 0.9:
+        if obj.spend / obj.budget >= Decimal('0.9'):
             return 'Warning'
         return 'OK'

@@ -1,3 +1,4 @@
+# data and business rules about the data itself. Things that are true regardless of how the data is used.
 from django.db import models
 
 
@@ -9,3 +10,10 @@ class Campaign(models.Model):
 
     def __str__(self):
         return self.name
+    
+    
+    @property
+    def spend_percentage(self):
+        if self.budget <= 0:
+            return 0
+        return (self.spend / self.budget) * 100
